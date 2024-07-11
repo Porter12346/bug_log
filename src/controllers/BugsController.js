@@ -11,7 +11,22 @@ export class BugsController extends BaseController {
             .get('/:bugId', this.getBugById)
             .use(Auth0Provider.getAuthorizedUserInfo)
             .post('', this.createBug)
-            .put('', this.editBug)
+            .put('/:bugId', this.editBug)
+            .delete('/:bugId', this.destroyBug)
+    }
+    destroyBug(arg0, destroyBug) {
+        throw new Error("Method not implemented.");
+    }
+    async editBug(request, response, next) {
+        try {
+            const bugId = request.params.bugId
+            const bugUpdateData = request.body
+            const user = request.userInfo
+            const bug = await bugsService.editBug(bugId, user.id, bugUpdateData)
+            response.send(bug)
+        } catch (error) {
+            next(error)
+        }
     }
 
     async getBugById(request, response, next) {
