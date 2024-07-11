@@ -14,9 +14,17 @@ export class BugsController extends BaseController {
             .put('/:bugId', this.editBug)
             .delete('/:bugId', this.destroyBug)
     }
-    destroyBug(arg0, destroyBug) {
-        throw new Error("Method not implemented.");
+    async destroyBug(request, response, next) {
+        try {
+            const bugId = request.params.bugId
+            const user = request.userInfo
+            const bug = await bugsService.destroyBug(bugId, user.id)
+            response.send(bug)
+        } catch (error) {
+            next(error)
+        }
     }
+    
     async editBug(request, response, next) {
         try {
             const bugId = request.params.bugId

@@ -1,7 +1,15 @@
 import { dbContext } from "../db/DbContext.js"
-import { Forbidden } from "../utils/Errors.js"
+import { BadRequest, Forbidden } from "../utils/Errors.js"
 
 class BugsService {
+    async destroyBug(bugId, id) {
+        const bug = await this.getBugById(bugId)
+        if (bug.creatorId != id) {
+            throw new Forbidden("NO!")
+        } 
+        await bug.deleteOne()
+        return `${bug.title} has been deleted.`
+    }
     async editBug(bugId, id, bugUpdateData) {
         const originalBug = await dbContext.Bugs.findById(bugId)
         if (id != originalBug.creatorId) {
@@ -18,6 +26,9 @@ class BugsService {
 
     async getBugById(bugId) {
         const bugs = await dbContext.Bugs.findById(bugId).populate('creator')
+        if (!bugs){
+            throw new BadRequest ('Unable to find bugId.')
+        }
         return (bugs)
     }
 
